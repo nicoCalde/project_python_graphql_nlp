@@ -50,7 +50,7 @@ MIDDLEWARE = [
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
 
-ROOT_URLCONF = 'GraphQL_NLP_API.urls'
+ROOT_URLCONF = 'graphql_nlp_api.urls'
 
 TEMPLATES = [
     {
@@ -68,7 +68,7 @@ TEMPLATES = [
     },
 ]
 
-WSGI_APPLICATION = 'GraphQL_NLP_API.wsgi.application'
+WSGI_APPLICATION = 'graphql_nlp_api.wsgi.application'
 
 
 # Database
