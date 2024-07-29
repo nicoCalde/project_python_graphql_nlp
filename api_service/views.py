@@ -1,81 +1,115 @@
-from django.http import JsonResponse
-from django.views.decorators.csrf import csrf_exempt
-import pandas as pd
+from rest_framework.views import APIView
+from rest_framework.response import Response
+from rest_framework import status
+from django.db.models import Q
 import spacy
+from drf_yasg.utils import swagger_auto_schema
+from drf_yasg import openapi
+from rest_framework import generics
+from .models import ECommerceAnalytics
+from .serializers import ECommerceAnalyticsSerializer
 
 # Load the spaCy model
 nlp = spacy.load('en_core_web_sm')
 
-# Path to the CSV file
-CSV_FILE_PATH = 'Data example - Python Coding Challenge - GraphQL.csv'
-
 # Create your views here.
-@csrf_exempt
-def nlp_endpoint(request):
-    if request.method == 'POST':
-        query = request.POST.get('query', '')
+class nlp_endpoint(APIView):
+    @swagger_auto_schema(
+        request_body=openapi.Schema(
+            type=openapi.TYPE_OBJECT,
+            properties={
+                'query': openapi.Schema(type=openapi.TYPE_STRING, description='The search query'),
+            },
+            required=['query']
+        ),
+        responses={
+            200: openapi.Response(
+                description='Successful response',
+                schema=openapi.Schema(
+                    type=openapi.TYPE_OBJECT,
+                    properties={
+                        'total_results': openapi.Schema(type=openapi.TYPE_INTEGER, description='Total number of results'),
+                        'results': openapi.Schema(
+                            type=openapi.TYPE_ARRAY,
+                            items=openapi.Schema(
+                                type=openapi.TYPE_OBJECT,
+                                properties={
+                                    'id_tie_fecha_valor': openapi.Schema(type=openapi.TYPE_INTEGER),
+                                    'id_cli_cliente': openapi.Schema(type=openapi.TYPE_INTEGER),
+                                    'id_ga_vista': openapi.Schema(type=openapi.TYPE_INTEGER),
+                                    'id_ga_tipo_dispositivo': openapi.Schema(type=openapi.TYPE_INTEGER),
+                                    'id_ga_fuente_medio': openapi.Schema(type=openapi.TYPE_INTEGER),
+                                    'desc_ga_sku_producto': openapi.Schema(type=openapi.TYPE_STRING),
+                                    'desc_ga_categoria_producto': openapi.Schema(type=openapi.TYPE_NUMBER),
+                                    'fc_agregado_carrito_cant': openapi.Schema(type=openapi.TYPE_INTEGER),
+                                    'fc_ingreso_producto_monto': openapi.Schema(type=openapi.TYPE_NUMBER),
+                                    'fc_retirado_carrito_cant': openapi.Schema(type=openapi.TYPE_NUMBER),
+                                    'fc_detalle_producto_cant': openapi.Schema(type=openapi.TYPE_INTEGER),
+                                    'fc_producto_cant': openapi.Schema(type=openapi.TYPE_INTEGER),
+                                    'desc_ga_nombre_producto': openapi.Schema(type=openapi.TYPE_NUMBER),
+                                    'fc_visualizaciones_pag_cant': openapi.Schema(type=openapi.TYPE_NUMBER),
+                                    'flag_pipol': openapi.Schema(type=openapi.TYPE_INTEGER),
+                                    'SASASA': openapi.Schema(type=openapi.TYPE_STRING),
+                                    'id_ga_producto': openapi.Schema(type=openapi.TYPE_INTEGER),
+                                    'desc_ga_nombre_producto_1': openapi.Schema(type=openapi.TYPE_STRING),
+                                    'desc_ga_sku_producto_1': openapi.Schema(type=openapi.TYPE_STRING),
+                                    'desc_ga_marca_producto': openapi.Schema(type=openapi.TYPE_STRING),
+                                    'desc_ga_cod_producto': openapi.Schema(type=openapi.TYPE_NUMBER),
+                                    'desc_categoria_producto': openapi.Schema(type=openapi.TYPE_STRING),
+                                    'desc_categoria_prod_principal': openapi.Schema(type=openapi.TYPE_STRING),
+                                }
+                            )
+                        ),
+                    }
+                )
+            ),
+            400: openapi.Response(
+                description='Bad request',
+                schema=openapi.Schema(
+                    type=openapi.TYPE_OBJECT,
+                    properties={
+                        'error': openapi.Schema(type=openapi.TYPE_STRING),
+                    }
+                )
+            ),
+        }
+    )
+    def post(self, request, *args, **kwargs):
+        query = request.data.get('query', '')
 
         if not query:
-            return JsonResponse({'error': 'No query provided'}, status=400)
+            return Response({'error': 'No query provided'}, status=status.HTTP_400_BAD_REQUEST)
 
         # Normalize the query to lowercase
         query = query.lower()
 
-        # Check if the query specifies a column and value
-        if ':' in query:
-            column_name, value = map(str.strip, query.split(':', 1))
+        # General search across all fields
+        doc = nlp(query)
+        keywords = [ent.text.lower() for ent in doc.ents]
 
-            # Load the data
-            data = pd.read_csv(CSV_FILE_PATH)
+        # If no entities are recognized, use the entire query as a keyword
+        if not keywords:
+            keywords = query.lower().split()
 
-            # Check if the specified column exists in the dataset
-            if column_name not in data.columns:
-                return JsonResponse({'error': f'Column "{column_name}" not found in dataset.'}, status=400)
+        # Build the query to search across all fields
+        query_filter = Q()
+        for field in ECommerceAnalytics._meta.get_fields():
+            if field.get_internal_type() in ['CharField', 'TextField']:
+                field_name = field.name
+                for keyword in keywords:
+                    query_filter |= Q(**{f"{field_name}__icontains": keyword})
 
-            # Convert both dataset and value to lowercase for case-insensitive matching
-            data[column_name] = data[column_name].astype(str).str.lower()
-            value = value.lower()
+        # Query the database
+        matching_rows = ECommerceAnalytics.objects.filter(query_filter)
 
-            # Filter rows based on the column value
-            matching_rows = data[data[column_name].str.contains(value, na=False)]
-
-        else:
-            # General search across all columns
-            doc = nlp(query)
-            keywords = [ent.text.lower() for ent in doc.ents]
-
-            # If no entities are recognized, use the entire query as a keyword
-            if not keywords:
-                keywords = query.lower().split()
-
-            # Load the data
-            data = pd.read_csv(CSV_FILE_PATH)
-
-            # Function to check if any keyword is in the row
-            def row_contains_keywords(row):
-                row_data = ' '.join(row.astype(str).str.lower().values)
-                return any(keyword in row_data for keyword in keywords)
-
-            # Apply the function to filter rows
-            results = data.apply(row_contains_keywords, axis=1)
-            matching_rows = data[results]
-
-        # Convert results to a list of dictionaries
-        response_data = matching_rows.to_dict(orient='records')
-
-        # Add total results count
+        # Serialize the results
+        serializer = ECommerceAnalyticsSerializer(matching_rows, many=True)
         response_data = {
-            'total_results': len(response_data),
-            'results': response_data
+            'total_results': len(serializer.data),
+            'results': serializer.data
         }
 
-        return JsonResponse(response_data, safe=False)
-    else:
-        return JsonResponse({'error': 'Invalid HTTP method'}, status=405)
-    
-from rest_framework import generics
-from .models import ECommerceAnalytics
-from .serializers import ECommerceAnalyticsSerializer
+        return Response(response_data)
 
 class ECommerceAnalyticsListCreate(generics.ListCreateAPIView):
     queryset = ECommerceAnalytics.objects.all()
