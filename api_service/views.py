@@ -14,7 +14,7 @@ CSV_FILE_PATH = 'Data example - Python Coding Challenge - GraphQL.csv'
 def nlp_endpoint(request):
     if request.method == 'POST':
         query = request.POST.get('query', '')
-        
+
         if not query:
             return JsonResponse({'error': 'No query provided'}, status=400)
 
@@ -39,9 +39,6 @@ def nlp_endpoint(request):
             # Filter rows based on the column value
             matching_rows = data[data[column_name].str.contains(value, na=False)]
 
-            # Convert results to a list of dictionaries
-            response_data = matching_rows.to_dict(orient='records')
-
         else:
             # General search across all columns
             doc = nlp(query)
@@ -63,8 +60,14 @@ def nlp_endpoint(request):
             results = data.apply(row_contains_keywords, axis=1)
             matching_rows = data[results]
 
-            # Convert results to a list of dictionaries
-            response_data = matching_rows.to_dict(orient='records')
+        # Convert results to a list of dictionaries
+        response_data = matching_rows.to_dict(orient='records')
+
+        # Add total results count
+        response_data = {
+            'total_results': len(response_data),
+            'results': response_data
+        }
 
         return JsonResponse(response_data, safe=False)
     else:
