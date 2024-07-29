@@ -39,6 +39,8 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'api_service',
     'graphene_django',
+    'rest_framework',
+    'drf_yasg',
 ]
 
 MIDDLEWARE = [

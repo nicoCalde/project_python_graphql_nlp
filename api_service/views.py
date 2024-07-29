@@ -72,3 +72,15 @@ def nlp_endpoint(request):
         return JsonResponse(response_data, safe=False)
     else:
         return JsonResponse({'error': 'Invalid HTTP method'}, status=405)
+    
+from rest_framework import generics
+from .models import ECommerceAnalytics
+from .serializers import ECommerceAnalyticsSerializer
+
+class ECommerceAnalyticsListCreate(generics.ListCreateAPIView):
+    queryset = ECommerceAnalytics.objects.all()
+    serializer_class = ECommerceAnalyticsSerializer
+
+class ECommerceAnalyticsDetail(generics.RetrieveUpdateDestroyAPIView):
+    queryset = ECommerceAnalytics.objects.all()
+    serializer_class = ECommerceAnalyticsSerializer
