@@ -2,6 +2,17 @@ import graphene
 from graphene_django import DjangoObjectType
 from .models import ECommerceAnalytics
 
+'''
+Comments explaining the Query code:
+ - The ECommerceAnalyticsType class is a DjangoObjectType that maps the ECommerceAnalytics model fields to GraphQL fields.
+ - The Query class defines GraphQL queries for fetching all ECommerceAnalytics records and fetching records based on various id fields and SKU.
+ - The resolve_all_analytics method returns all records in the ECommerceAnalytics model.
+ - Each resolve_analytics_by_* method returns records matching the provided field value.
+ - The schema is defined with the Query class, allowing the defined queries to be used in the GraphQL endpoint.
+
+Note: You can add more queries as needed based on other fields in the model. Each query can help fetch specific data that might be required by the application or analysis.
+'''
+
 # Define a GraphQL type for the ECommerceAnalytics model
 class ECommerceAnalyticsType(DjangoObjectType):
     class Meta:
@@ -87,14 +98,3 @@ class Query(graphene.ObjectType):
         return ECommerceAnalytics.objects.filter(desc_ga_sku_producto=desc_ga_sku_producto)
 
 schema = graphene.Schema(query=Query)
-
-'''
-Comments explaining the Query code:
- - The ECommerceAnalyticsType class is a DjangoObjectType that maps the ECommerceAnalytics model fields to GraphQL fields.
- - The Query class defines GraphQL queries for fetching all ECommerceAnalytics records and fetching records based on various id fields and SKU.
- - The resolve_all_analytics method returns all records in the ECommerceAnalytics model.
- - Each resolve_analytics_by_* method returns records matching the provided field value.
- - The schema is defined with the Query class, allowing the defined queries to be used in the GraphQL endpoint.
-
-Note: You can add more queries as needed based on other fields in the model. Each query can help fetch specific data that might be required by the application or analysis.
-'''
