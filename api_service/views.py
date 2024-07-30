@@ -9,10 +9,41 @@ from rest_framework import generics
 from .models import ECommerceAnalytics
 from .serializers import ECommerceAnalyticsSerializer
 
+
 # Load the spaCy model
 nlp = spacy.load('en_core_web_sm')
 
 # Create your views here.
+
+'''
+    FEATURE SPECIFICATION OF THE NLP ENDPOINT
+    For a more advanced dialogue system between the user and the database, 
+    an API should be implemented to:
+        - Interpret user queries,
+        - Analyze database responses, 
+        - Perform the necessary analysis.
+'''
+
+def generate_natural_language_response(query, results):
+    total_results = len(results)
+    if total_results == 0:
+        return f"Sorry, I couldn't find any data matching your query: '{query}'."
+    
+    response = f"Based on your query: '{query}', I found {total_results} result(s). Here are the details:\n"
+    
+    # Limit the number of items in the response
+    max_items = 5
+    items_to_display = results[:max_items]
+    
+    for idx, row in enumerate(items_to_display):
+        row_str = ', '.join(f"{k}: {v}" for k, v in row.items())
+        response += f"{idx + 1}. {row_str}\n"
+    
+    if total_results > max_items:
+        response += f"\nThere are more results available. Only the first {max_items} items are displayed."
+
+    return response
+
 class nlp_endpoint(APIView):
     @swagger_auto_schema(
         request_body=openapi.Schema(
@@ -28,38 +59,7 @@ class nlp_endpoint(APIView):
                 schema=openapi.Schema(
                     type=openapi.TYPE_OBJECT,
                     properties={
-                        'total_results': openapi.Schema(type=openapi.TYPE_INTEGER, description='Total number of results'),
-                        'results': openapi.Schema(
-                            type=openapi.TYPE_ARRAY,
-                            items=openapi.Schema(
-                                type=openapi.TYPE_OBJECT,
-                                properties={
-                                    'id_tie_fecha_valor': openapi.Schema(type=openapi.TYPE_INTEGER),
-                                    'id_cli_cliente': openapi.Schema(type=openapi.TYPE_INTEGER),
-                                    'id_ga_vista': openapi.Schema(type=openapi.TYPE_INTEGER),
-                                    'id_ga_tipo_dispositivo': openapi.Schema(type=openapi.TYPE_INTEGER),
-                                    'id_ga_fuente_medio': openapi.Schema(type=openapi.TYPE_INTEGER),
-                                    'desc_ga_sku_producto': openapi.Schema(type=openapi.TYPE_STRING),
-                                    'desc_ga_categoria_producto': openapi.Schema(type=openapi.TYPE_NUMBER),
-                                    'fc_agregado_carrito_cant': openapi.Schema(type=openapi.TYPE_INTEGER),
-                                    'fc_ingreso_producto_monto': openapi.Schema(type=openapi.TYPE_NUMBER),
-                                    'fc_retirado_carrito_cant': openapi.Schema(type=openapi.TYPE_NUMBER),
-                                    'fc_detalle_producto_cant': openapi.Schema(type=openapi.TYPE_INTEGER),
-                                    'fc_producto_cant': openapi.Schema(type=openapi.TYPE_INTEGER),
-                                    'desc_ga_nombre_producto': openapi.Schema(type=openapi.TYPE_NUMBER),
-                                    'fc_visualizaciones_pag_cant': openapi.Schema(type=openapi.TYPE_NUMBER),
-                                    'flag_pipol': openapi.Schema(type=openapi.TYPE_INTEGER),
-                                    'SASASA': openapi.Schema(type=openapi.TYPE_STRING),
-                                    'id_ga_producto': openapi.Schema(type=openapi.TYPE_INTEGER),
-                                    'desc_ga_nombre_producto_1': openapi.Schema(type=openapi.TYPE_STRING),
-                                    'desc_ga_sku_producto_1': openapi.Schema(type=openapi.TYPE_STRING),
-                                    'desc_ga_marca_producto': openapi.Schema(type=openapi.TYPE_STRING),
-                                    'desc_ga_cod_producto': openapi.Schema(type=openapi.TYPE_NUMBER),
-                                    'desc_categoria_producto': openapi.Schema(type=openapi.TYPE_STRING),
-                                    'desc_categoria_prod_principal': openapi.Schema(type=openapi.TYPE_STRING),
-                                }
-                            )
-                        ),
+                        'response': openapi.Schema(type=openapi.TYPE_STRING, description='Natural language response'),
                     }
                 )
             ),
@@ -83,7 +83,7 @@ class nlp_endpoint(APIView):
         # Normalize the query to lowercase
         query = query.lower()
 
-        # General search across all fields
+        # Use spaCy to process the query
         doc = nlp(query)
         keywords = [ent.text.lower() for ent in doc.ents]
 
@@ -104,12 +104,12 @@ class nlp_endpoint(APIView):
 
         # Serialize the results
         serializer = ECommerceAnalyticsSerializer(matching_rows, many=True)
-        response_data = {
-            'total_results': len(serializer.data),
-            'results': serializer.data
-        }
+        response_data = serializer.data
 
-        return Response(response_data)
+        # Generate natural language response
+        natural_language_response = generate_natural_language_response(query, response_data)
+
+        return Response({'response': natural_language_response})
 
 class ECommerceAnalyticsListCreate(generics.ListCreateAPIView):
     queryset = ECommerceAnalytics.objects.all()
