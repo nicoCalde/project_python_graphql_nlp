@@ -1,34 +1,23 @@
 from django.db import models
 
 # Create your models here.
-
-# Model representing e-commerce analytics data.
-class ECommerceAnalytics(models.Model):
-    id_tie_fecha_valor = models.IntegerField()
-    id_cli_cliente = models.IntegerField()
-    id_ga_vista = models.IntegerField()
-    id_ga_tipo_dispositivo = models.IntegerField()
-    id_ga_fuente_medio = models.IntegerField()
-    desc_ga_sku_producto = models.CharField(max_length=255, null=True, blank=True)
-    desc_ga_categoria_producto = models.FloatField(null=True, blank=True)
-    fc_agregado_carrito_cant = models.IntegerField(null=True, blank=True)
-    fc_ingreso_producto_monto = models.FloatField(null=True, blank=True)
-    fc_retirado_carrito_cant = models.FloatField(null=True, blank=True)
-    fc_detalle_producto_cant = models.IntegerField(null=True, blank=True)
-    fc_producto_cant = models.IntegerField(null=True, blank=True)
-    desc_ga_nombre_producto = models.FloatField(null=True, blank=True)
-    fc_visualizaciones_pag_cant = models.FloatField(null=True, blank=True)
-    flag_pipol = models.IntegerField(null=True, blank=True)
-    SASASA = models.CharField(max_length=255, null=True, blank=True)
-    id_ga_producto = models.IntegerField(null=True, blank=True)
-    desc_ga_nombre_producto_1 = models.CharField(max_length=255, null=True, blank=True)
-    desc_ga_sku_producto_1 = models.CharField(max_length=255, null=True, blank=True)
-    desc_ga_marca_producto = models.CharField(max_length=255, null=True, blank=True)
-    desc_ga_cod_producto = models.FloatField(null=True, blank=True)
-    desc_categoria_producto = models.CharField(max_length=255, null=True, blank=True)
-    desc_categoria_prod_principal = models.CharField(max_length=255, null=True, blank=True)
-    # Reflects the structure and content of the provided CSV file, capturing all columns and their respective data types.
+class Cars(models.Model):
+    make = models.CharField(max_length=100, null=True, blank=True)
+    model = models.CharField(max_length=100, null=True, blank=True)
+    year = models.IntegerField(null=True, blank=True)
+    engine_fuel_type = models.CharField(max_length=100, null=True, blank=True)
+    engine_hp = models.FloatField(null=True, blank=True)
+    engine_cylinders = models.FloatField(null=True, blank=True)
+    transmission_type = models.CharField(max_length=100, null=True, blank=True)
+    driven_wheels = models.CharField(max_length=100, null=True, blank=True)
+    number_of_doors = models.FloatField(null=True, blank=True)
+    market_category = models.CharField(max_length=100, null=True, blank=True)
+    vehicle_size = models.CharField(max_length=100, null=True, blank=True)
+    vehicle_style = models.CharField(max_length=100, null=True, blank=True)
+    highway_mpg = models.IntegerField(null=True, blank=True)
+    city_mpg = models.IntegerField(null=True, blank=True)
+    popularity = models.IntegerField(null=True, blank=True)
+    msrp = models.IntegerField(null=True, blank=True)
 
     def __str__(self):
-        return f"Customer {self.id_cli_cliente} - Product {self.desc_ga_sku_producto}"
-    # This __str__ method includes the customer ID and product SKU, providing a clear and concise representation of each record.
+        return f"{self.make} - {self.model} - {self.year}"

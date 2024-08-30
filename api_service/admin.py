@@ -1,5 +1,7 @@
 from django.contrib import admin
-from .models import ECommerceAnalytics
+from .models import Cars
 
 # Register your models here.
-admin.site.register(ECommerceAnalytics)
+@admin.register(Cars)
+class CarsAdmin(admin.ModelAdmin):
+    list_display = ('__str__',)

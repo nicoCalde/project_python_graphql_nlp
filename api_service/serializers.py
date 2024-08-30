@@ -1,7 +1,7 @@
 from rest_framework import serializers
-from .models import ECommerceAnalytics
+from .models import Cars
 
-class ECommerceAnalyticsSerializer(serializers.ModelSerializer):
+class CarsSerializer(serializers.ModelSerializer):
     class Meta:
-        model = ECommerceAnalytics
+        model = Cars
         fields = '__all__'  # Include all fields from the model

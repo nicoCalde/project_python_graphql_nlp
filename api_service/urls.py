@@ -2,7 +2,7 @@ from django.urls import path
 from django.views.decorators.csrf import csrf_exempt
 from graphene_django.views import GraphQLView
 from .schema import schema
-from .views import ECommerceAnalyticsListCreate, ECommerceAnalyticsDetail, nlp_endpoint
+from .views import CarsList, CarsDetail
 from drf_yasg import openapi
 from drf_yasg.views import get_schema_view
 from rest_framework import permissions
@@ -23,9 +23,8 @@ schema_view = get_schema_view(
 
 urlpatterns = [
     path("graphql/", csrf_exempt(GraphQLView.as_view(graphiql=True, schema=schema))),
-    path('nlp/', nlp_endpoint.as_view(), name='nlp-endpoint'),
-    path('api/ecommerce-analytics/', ECommerceAnalyticsListCreate.as_view(), name='ecommerce-analytics-list-create'),
-    path('api/ecommerce-analytics/<int:pk>/', ECommerceAnalyticsDetail.as_view(), name='ecommerce-analytics-detail'),
+    path('api/cars/', CarsList.as_view(), name='cars-list'),
+    path('api/cars/<int:pk>/', CarsDetail.as_view(), name='cars-detail'),
     path('swagger/', schema_view.with_ui('swagger', cache_timeout=0), name='swagger-schema'),
     path('swagger.json', schema_view.without_ui(cache_timeout=0), name='swagger-json'),
     path('redoc/', schema_view.with_ui('redoc', cache_timeout=0), name='redoc-schema'),
