@@ -10,11 +10,11 @@ from rest_framework import permissions
 # Define your Swagger schema view
 schema_view = get_schema_view(
     openapi.Info(
-        title="API",
+        title="API Suite",
         default_version='v0.0.1',
-        description="Description of the API",
+        description="This API allows users to manage car data including makes, models, and years. It provides endpoints for creating, retrieving, updating, and deleting car entries.",
         terms_of_service="https://www.google.com/policies/terms/",
-        contact=openapi.Contact(email="admin@example.com"),
+        contact=openapi.Contact(email="31723375@ifts24.edu.ar, 30467866@ifts24.edu.ar"),
         license=openapi.License(name="BSD License"),
     ),
     public=True,
