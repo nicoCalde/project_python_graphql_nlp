@@ -1,2 +1,3 @@
 venv/
 cars.csv
+.env
