@@ -22,8 +22,9 @@ load_dotenv()
 openai_api_key = os.getenv('OPENAI_API_KEY')
 llm = ChatOpenAI(api_key=openai_api_key, model="gpt-4o-mini")
 
-# Connect to the SQLite database (replace with your database URI)
+# Connect to the SQLite database
 db = SQLDatabase.from_uri("sqlite:///db.sqlite3")  # Adjust URI as needed
+# db = SQLDatabase.from_uri("sqlite:///Chinook_Sqlite.sqlite")
 
 # Load the SQL query prompt
 query_prompt_template = hub.pull("langchain-ai/sql-query-system-prompt")
