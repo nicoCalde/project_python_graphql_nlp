@@ -2,7 +2,7 @@ from django.urls import path
 from django.views.decorators.csrf import csrf_exempt
 from graphene_django.views import GraphQLView
 from .schema import schema
-from .views import CarsList, CarsDetail
+from .views import CarsList, CarsDetail, NLPQueryView, nlp_ui_view
 from drf_yasg import openapi
 from drf_yasg.views import get_schema_view
 from rest_framework import permissions
@@ -28,4 +28,6 @@ urlpatterns = [
     path('swagger/', schema_view.with_ui('swagger', cache_timeout=0), name='swagger-schema'),
     path('swagger.json', schema_view.without_ui(cache_timeout=0), name='swagger-json'),
     path('redoc/', schema_view.with_ui('redoc', cache_timeout=0), name='redoc-schema'),
+    path('nlp/', NLPQueryView.as_view(), name='nlp'),
+    path("nlpui/", nlp_ui_view, name="nlp-ui"),
 ]
