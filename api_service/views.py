@@ -30,6 +30,9 @@ db = SQLDatabase.from_uri("sqlite:///db.sqlite3")  # Adjust URI as needed
 query_prompt_template = hub.pull("langchain-ai/sql-query-system-prompt")
 
 # Create your views here.
+def home_view(request):
+    return render(request, "index.html")
+
 class QueryOutput(BaseModel):
     query: str
 

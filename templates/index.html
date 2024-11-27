@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>API Service</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+            margin: 0;
+            padding: 0;
+            height: 100vh;
+            background-color: #f4f4f9;
+        }
+        #container {
+            width: 90%;
+            max-width: 600px;
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+            padding: 20px;
+        }
+        h1, h2 {
+            text-align: center;
+            margin: 10px 0;
+        }
+        ul {
+            list-style: none;
+            padding: 0;
+        }
+        li {
+            margin: 10px 0;
+        }
+        a {
+            text-decoration: none;
+            color: #4CAF50;
+            font-weight: bold;
+            border: 1px solid #ddd;
+            padding: 10px;
+            border-radius: 5px;
+            display: inline-block;
+        }
+        a:hover {
+            background: #4CAF50;
+            color: white;
+            border-color: #4CAF50;
+        }
+    </style>
+</head>
+<body>
+    <div id="container">
+        <h1>Servicio API</h1>
+        <h2>Enlaces de la API</h2>
+        <ul>
+            <li>
+                <a href="{% url 'graphql' %}" title="Interactúa con la API utilizando GraphQL">Punto de acceso GraphQL</a>
+            </li>
+            <li>
+                <a href="{% url 'cars-list' %}" title="Consulta y administra datos de autos (vista de lista)">Listado de Autos</a>
+            </li>
+            <li>
+                <a href="{% url 'swagger-schema' %}" title="Documentación y pruebas de la API (Swagger UI)">Documentación Swagger</a>
+            </li>
+            <li>
+                <a href="{% url 'swagger-json' %}" title="Esquema JSON sin formato de la API">Descargar Esquema JSON Swagger</a>
+            </li>
+            <li>
+                <a href="{% url 'redoc-schema' %}" title="Documentación alternativa de la API en formato ReDoc">Documentación ReDoc</a>
+            </li>
+            <li>
+                <a href="{% url 'nlp' %}" title="Envía consultas en lenguaje natural al motor SQL">Punto de acceso NLP</a>
+            </li>
+        </ul>
+        <h2>Enlace del Agente SQL</h2>
+        <ul>
+            <li>
+                <a href="{% url 'nlp-ui' %}" title="Interfaz interactiva para consultas SQL en lenguaje natural">Chat del Agente SQL</a>
+            </li>
+        </ul>
+    </div>
+</body>
+</html>

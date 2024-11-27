@@ -3,7 +3,7 @@ This project is a Django application called api_service within the graphql_nlp_a
 
 Project Setup
 Prerequisites
-Python 3.11
+Python 3.11.9
 Django 4.2
 Docker (optional, for containerization)
 
@@ -24,19 +24,6 @@ Note: The settings are configured for development (DEBUG=True). For production, 
 Superuser already created
 Username: admin
 Password: 123
-
-You can create your own or delete the existing database.
-
-Database Migration
-Delete the existing db.sqlite3 file and migrations if necessary.
-
-Run the following commands to set up the database:
-python manage.py makemigrations
-python manage.py migrate
-Populate the Database
-
-Run the script to populate the database with data from a CSV file:
-Python manage.py updatemodels
 
 Running the Project
 
@@ -59,12 +46,4 @@ Run the following commands to clear the Cache:
 docker system prune
 
 Additional Information
-Environment Variables
-Some variables should be hidden using a .env file for security. This has not been set up in the current configuration.
-
-Authentication Service
-The authentication service is not implemented. You can use the following packages to set it up:
-django-oauth-toolkit
-django-cors-headers
-djangorestframework-simplejwt
-Follow the respective documentation to implement these features.
+Ensure that the necessary environment variables are added before running the application.

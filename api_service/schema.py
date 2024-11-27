@@ -28,7 +28,19 @@ class Query(graphene.ObjectType):
     )
 
     def resolve_all_cars(self, info, **kwargs):
-        filters = {k: v for k, v in kwargs.items() if v is not None}
+        filters = {}
+        for key, value in kwargs.items():
+            if value is not None:
+                if key == "make":
+                    filters["make__iexact"] = value  # Insensible a mayúsculas
+                elif key == "model":
+                    filters["model__icontains"] = value  # Contiene en cualquier parte
+                elif key == "year":
+                    filters["year"] = value  # Año exacto
+                elif key == "msrp":
+                    filters["msrp__lte"] = value  # Menor o igual que el valor dado
+                else:
+                    filters[key] = value  # Filtro directo para otros campos
         return Cars.objects.filter(**filters)
 
 schema = graphene.Schema(query=Query)

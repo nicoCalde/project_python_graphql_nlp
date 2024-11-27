@@ -2,7 +2,7 @@ from django.urls import path
 from django.views.decorators.csrf import csrf_exempt
 from graphene_django.views import GraphQLView
 from .schema import schema
-from .views import CarsList, CarsDetail, NLPQueryView, nlp_ui_view
+from .views import CarsList, CarsDetail, NLPQueryView, nlp_ui_view, home_view
 from drf_yasg import openapi
 from drf_yasg.views import get_schema_view
 from rest_framework import permissions
@@ -22,7 +22,8 @@ schema_view = get_schema_view(
 )
 
 urlpatterns = [
-    path("graphql/", csrf_exempt(GraphQLView.as_view(graphiql=True, schema=schema))),
+    path("", home_view, name="home"), 
+    path("graphql/", csrf_exempt(GraphQLView.as_view(graphiql=True, schema=schema)), name="graphql"),
     path('api/cars/', CarsList.as_view(), name='cars-list'),
     path('api/cars/<int:pk>/', CarsDetail.as_view(), name='cars-detail'),
     path('swagger/', schema_view.with_ui('swagger', cache_timeout=0), name='swagger-schema'),
