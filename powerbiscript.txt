@@ -1,0 +1,28 @@
+1. Open PowerBI
+2. Home
+3. Get data
+4. Blank query
+5. Rename Query1 to GetPage
+6. Home
+7. Advanced editor
+8. Paste this code:
+let
+    GetPage = let
+    GetPage = (url as text) =>
+        let
+            Source = Json.Document(Web.Contents(url)),
+            Results = Source[results],
+            NextPage = Source[next]
+        in
+            if NextPage = null then Results else Results & @GetPage(NextPage)
+    in
+        GetPage("http://127.0.0.1:8000/api/cars/"),
+    GetPage1 = GetPage,
+    #"Converted to Table" = Table.FromList(GetPage1, Splitter.SplitByNothing(), null, null, ExtraValues.Error),
+    #"Expanded Column1" = Table.ExpandRecordColumn(#"Converted to Table", "Column1", {"id", "make", "model", "year", "engine_fuel_type", "engine_hp", "engine_cylinders", "transmission_type", "driven_wheels", "number_of_doors", "market_category", "vehicle_size", "vehicle_style", "highway_mpg", "city_mpg", "popularity", "msrp"}, {"Column1.id", "Column1.make", "Column1.model", "Column1.year", "Column1.engine_fuel_type", "Column1.engine_hp", "Column1.engine_cylinders", "Column1.transmission_type", "Column1.driven_wheels", "Column1.number_of_doors", "Column1.market_category", "Column1.vehicle_size", "Column1.vehicle_style", "Column1.highway_mpg", "Column1.city_mpg", "Column1.popularity", "Column1.msrp"}),
+    #"Renamed Columns" = Table.TransformColumnNames(#"Expanded Column1", each Text.Replace(_, "Column1.", ""))
+in
+    #"Renamed Columns"
+
+9. Click Done
+10. Close & apply
