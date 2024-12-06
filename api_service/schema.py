@@ -9,6 +9,7 @@ class CarsType(DjangoObjectType):
 class Query(graphene.ObjectType):
     all_cars = graphene.List(
         CarsType,
+        id=graphene.Int(),
         make=graphene.String(),
         model=graphene.String(),
         year=graphene.Int(),
